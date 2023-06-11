@@ -4,6 +4,8 @@ import bcrypt from 'bcrypt';
 
 import UserModel from '../models/User.js';
 
+const secretJWT = process.env.JWT_SECRET;
+
 export const register = async (req, res) => {
   try {
     const password = req.body.password;
@@ -23,7 +25,7 @@ export const register = async (req, res) => {
       {
         _id: user._id,
       },
-      'secret123',
+      secretJWT,
       {
         expiresIn: '30d',
       },
@@ -65,7 +67,7 @@ export const login = async (req, res) => {
       {
         _id: user._id,
       },
-      'secret123',
+      secretJWT,
       {
         expiresIn: '30d',
       },
