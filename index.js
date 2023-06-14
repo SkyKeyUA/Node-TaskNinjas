@@ -1,71 +1,37 @@
 /** @format */
 
 import 'dotenv/config';
-
 import express from 'express';
-import multer from 'multer';
 // node.js is blocked by other domains, cors is the unlock blocked
 import cors from 'cors';
-
+import cookieParser from 'cookie-parser';
 import mongoose from 'mongoose';
 
-import { loginValidation, registerValidation, postCreateValidation } from './validations/index.js';
+import { authRouter, postRouter, uploadRouter } from './router/index.js';
 
-import { checkAuth, handleValidationErrors } from './utils/index.js';
-
-import { register, login, getMe, PostController } from './controllers/index.js';
-
-mongoose
-  .connect(process.env.DB)
-  .then(() => console.log('DB ok'))
-  .catch((err) => console.log('DB error', err));
-
+const PORT = process.env.PORT || 3000;
 const app = express();
 
-const port = process.env.PORT || 3000;
-
-const storage = multer.diskStorage({
-  destination: (_, __, cb) => {
-    cb(null, 'uploads');
-  },
-  filename: (_, file, cb) => {
-    cb(null, file.originalname);
-  },
-});
-
-const upload = multer({ storage });
-
 app.use(express.json());
+app.use(cookieParser());
 app.use(cors());
 //check the folder "uploads" on files
 app.use('/uploads', express.static('uploads'));
 
-app.post('/auth/login', loginValidation, handleValidationErrors, login);
-app.post('/auth/register', registerValidation, handleValidationErrors, register);
-app.get('/auth/me', checkAuth, getMe);
+app.use('/auth', authRouter);
+app.use('/posts', postRouter);
+app.use('/upload', uploadRouter);
 
-app.post('/upload', checkAuth, upload.single('image'), (req, res) => {
-  res.json({
-    url: `/uploads/${req.file.originalname}`,
-  });
-});
-
-// app.get('/posts', PostController.getAll);
-app.get('/posts', PostController.getPages);
-app.get('/posts/:id', PostController.getOne);
-app.post('/posts', checkAuth, postCreateValidation, handleValidationErrors, PostController.create);
-app.delete('/posts/:id', checkAuth, PostController.remove);
-app.patch(
-  '/posts/:id',
-  checkAuth,
-  postCreateValidation,
-  handleValidationErrors,
-  PostController.update,
-);
-
-app.listen(port, (err) => {
-  if (err) {
-    return console.log(err);
+const start = async () => {
+  try {
+    await mongoose
+      .connect(process.env.DB_URL, { useNewUrlParser: true, useUnifiedTopology: true })
+      .then(() => console.log('DB ok'))
+      .catch((err) => console.log('DB error', err));
+    app.listen(PORT, () => console.log('Server OK'));
+  } catch (e) {
+    console.log(e);
   }
-  console.log('Server OK');
-});
+};
+
+start();
