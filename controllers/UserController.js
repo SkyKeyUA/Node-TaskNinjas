@@ -3,8 +3,7 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 
 import UserModel from '../models/User.js';
-
-const secretJWT = process.env.JWT_SECRET;
+import TokenService from '../service/tokenService.js';
 
 export const register = async (req, res) => {
   try {
@@ -21,21 +20,15 @@ export const register = async (req, res) => {
 
     const user = await doc.save();
 
-    const token = jwt.sign(
-      {
-        _id: user._id,
-      },
-      secretJWT,
-      {
-        expiresIn: '30d',
-      },
-    );
+    const tokenService = new TokenService();
+    const tokens = tokenService.generateTokens({ _id: user._id });
+    await tokenService.saveToken(user._id, tokens.refreshToken);
 
     const { passwordHash, ...userData } = user._doc;
 
     res.json({
       ...userData,
-      token,
+      tokens,
     });
   } catch (error) {
     console.log(error);
@@ -100,6 +93,17 @@ export const getMe = async (req, res) => {
     const { passwordHash, ...userData } = user._doc;
 
     res.json({ userData });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: 'No access',
+    });
+  }
+};
+
+export const refresh = async (req, res) => {
+  try {
+    res.json(['1523', '456']);
   } catch (error) {
     console.log(error);
     res.status(500).json({

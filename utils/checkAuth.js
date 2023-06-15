@@ -2,7 +2,7 @@
 
 import jwt from 'jsonwebtoken';
 
-const secretJWT = process.env.JWT_SECRET;
+const secretJWT = process.env.JWT_ACCESS_SECRET;
 
 export default (req, res, next) => {
   const token = (req.headers.authorization || '').replace(/Bearer\s?/, '');

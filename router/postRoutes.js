@@ -7,7 +7,6 @@ import { PostController } from '../controllers/index.js';
 
 const postRouter = express.Router();
 
-// postRouter.get('/', PostController.getAll);
 postRouter.get('/', PostController.getPages);
 postRouter.get('/:id', PostController.getOne);
 postRouter.post(

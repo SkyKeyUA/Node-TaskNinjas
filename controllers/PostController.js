@@ -1,19 +1,6 @@
 /** @format */
 import PostModel from '../models/Post.js';
 
-// export const getAll = async (req, res) => {
-//   try {
-//     const posts = await PostModel.find().populate('user', '-passwordHash').exec();
-
-//     res.json(posts);
-//   } catch (error) {
-//     console.log(error);
-//     res.status(500).json({
-//       message: 'Failed to get articles',
-//     });
-//   }
-// };
-
 export const getPages = async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 5;
