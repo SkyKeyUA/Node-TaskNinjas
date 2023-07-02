@@ -1,11 +1,12 @@
 /** @format */
 
 import 'dotenv/config';
+
 import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
 
-import { authRouter, postRouter, uploadRouter } from './router/index.js';
+import { initRoutes } from './router/routes.js';
 
 const PORT = process.env.PORT || 3000;
 const app = express();
@@ -14,9 +15,7 @@ app.use(express.json());
 app.use(cors());
 app.use('/uploads', express.static('uploads'));
 
-app.use('/auth', authRouter);
-app.use('/posts', postRouter);
-app.use('/upload', uploadRouter);
+initRoutes(app);
 
 const start = async () => {
   try {

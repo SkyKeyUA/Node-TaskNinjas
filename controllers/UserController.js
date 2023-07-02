@@ -5,6 +5,8 @@ import bcrypt from 'bcrypt';
 import UserModel from '../models/User.js';
 import TokenService from '../service/tokenService.js';
 
+const secretJWT = process.env.JWT_ACCESS_SECRET;
+
 export const register = async (req, res) => {
   try {
     const password = req.body.password;
