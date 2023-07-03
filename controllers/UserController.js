@@ -103,7 +103,40 @@ export const getMe = async (req, res) => {
   }
 };
 
+export const logout = async (req, res) => {
+  try {
+    res.json(['1523', '456']);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: 'No access',
+    });
+  }
+};
+
+export const activate = async (req, res) => {
+  try {
+    res.json(['1523', '456']);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: 'No access',
+    });
+  }
+};
+
 export const refresh = async (req, res) => {
+  try {
+    res.json(['1523', '456']);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: 'No access',
+    });
+  }
+};
+
+export const getUsers = async (req, res) => {
   try {
     res.json(['1523', '456']);
   } catch (error) {

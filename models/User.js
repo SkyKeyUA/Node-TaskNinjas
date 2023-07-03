@@ -17,6 +17,8 @@ const UserSchema = new mongoose.Schema(
       type: String,
       require: true,
     },
+    isActivated: { type: Boolean, default: false },
+    activationLink: { type: String },
     avatarUrl: String,
   },
   {
