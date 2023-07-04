@@ -1,5 +1,9 @@
 /** @format */
 
-class MailService {}
+class MailService {
+  async sendActivationMail(to, link) {}
+}
 
-export default MailService;
+const mailService = new MailService();
+
+export { mailService };

@@ -1,12 +1,12 @@
 /** @format */
 
 import express from 'express';
-import { loginValidation, registerValidation } from '../validations/index.js';
+import { loginValidation, registrationValidation } from '../validations/index.js';
 import { checkAuth, handleValidationErrors } from '../utils/index.js';
 import {
   getMe,
   login,
-  register,
+  registration,
   refresh,
   logout,
   activate,
@@ -16,7 +16,7 @@ import {
 const authRouter = express.Router();
 
 authRouter.post('/login', loginValidation, handleValidationErrors, login);
-authRouter.post('/register', registerValidation, handleValidationErrors, register);
+authRouter.post('/registration', registrationValidation, handleValidationErrors, registration);
 authRouter.get('/me', checkAuth, getMe);
 
 authRouter.post('/logout', logout);
