@@ -101,7 +101,9 @@ export const logout = async (req, res) => {
 
 export const activate = async (req, res) => {
   try {
-    res.json(['1523', '456']);
+    const activationLink = req.params.link;
+    await userService.activate(activationLink);
+    return res.redirect(process.env.CLIENT_URL);
   } catch (error) {
     console.log(error);
     res.status(500).json({
