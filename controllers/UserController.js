@@ -3,39 +3,24 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 
 import UserModel from '../models/User.js';
-import TokenService from '../service/tokenService.js';
+import { tokenService, userService } from '../service/index.js';
 
 const secretJWT = process.env.JWT_ACCESS_SECRET;
 
-export const register = async (req, res) => {
+export const registration = async (req, res) => {
   try {
-    const password = req.body.password;
-    const salt = await bcrypt.genSalt(10);
-    const hash = await bcrypt.hash(password, salt);
-
-    const doc = new UserModel({
-      email: req.body.email,
-      fullName: req.body.fullName,
-      avatarUrl: req.body.avatarUrl,
-      passwordHash: hash,
+    const { email, password, fullName, avatarUrl } = req.body;
+    const userData = await userService.registration(email, password, fullName, avatarUrl);
+    res.cookie('refreshToken', userData.refreshToken, {
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+      httpOnly: true,
     });
 
-    const user = await doc.save();
-
-    const tokenService = new TokenService();
-    const tokens = tokenService.generateTokens({ _id: user._id });
-    await tokenService.saveToken(user._id, tokens.refreshToken);
-
-    const { passwordHash, ...userData } = user._doc;
-
-    res.json({
-      ...userData,
-      tokens,
-    });
+    return res.json(userData);
   } catch (error) {
     console.log(error);
     res.status(500).json({
-      message: 'Failed to register',
+      message: 'Failed to registration',
     });
   }
 };
@@ -103,7 +88,42 @@ export const getMe = async (req, res) => {
   }
 };
 
+export const logout = async (req, res) => {
+  try {
+    res.json(['1523', '456']);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: 'No access',
+    });
+  }
+};
+
+export const activate = async (req, res) => {
+  try {
+    const activationLink = req.params.link;
+    await userService.activate(activationLink);
+    return res.redirect(process.env.CLIENT_URL);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: 'No access',
+    });
+  }
+};
+
 export const refresh = async (req, res) => {
+  try {
+    res.json(['1523', '456']);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: 'No access',
+    });
+  }
+};
+
+export const getUsers = async (req, res) => {
   try {
     res.json(['1523', '456']);
   } catch (error) {

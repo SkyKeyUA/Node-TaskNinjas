@@ -1,4 +1,12 @@
 /** @format */
 
-export { register, login, getMe, refresh } from './UserController.js';
+export {
+  registration,
+  login,
+  getMe,
+  refresh,
+  logout,
+  activate,
+  getUsers,
+} from './UserController.js';
 export * as PostController from './PostController.js';
