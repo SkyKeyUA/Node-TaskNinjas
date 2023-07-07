@@ -78,6 +78,10 @@ class UserService {
       userData,
     };
   }
+  async logout(refreshToken) {
+    const token = await tokenService.removeToken(refreshToken);
+    return token;
+  }
 }
 
 const userService = new UserService();

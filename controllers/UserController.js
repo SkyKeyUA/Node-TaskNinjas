@@ -63,7 +63,10 @@ export const getMe = async (req, res, next) => {
 
 export const logout = async (req, res, next) => {
   try {
-    res.json(['1523', '456']);
+    const { refreshToken } = req.cookies;
+    const token = await userService.logout(refreshToken);
+    res.clearCookie('refreshToken');
+    return res.json(token);
   } catch (e) {
     next(e);
   }
