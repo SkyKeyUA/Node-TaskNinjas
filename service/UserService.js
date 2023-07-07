@@ -5,13 +5,14 @@ import { v4 as uuidv4 } from 'uuid';
 import UserModel from '../models/User.js';
 import { mailService, tokenService } from './index.js';
 import { UserDto } from '../dtos/userDTO.js';
+import { ApiError } from '../exceptions/apiError.js';
 
 class UserService {
   async registration(email, password, fullName, avatarUrl) {
     const candidate = await UserModel.findOne({ email });
 
     if (candidate) {
-      throw new Error(`A user with the email address ${email} already exists`);
+      throw ApiError.BadRequest(`A user with the email address ${email} already exists`);
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -49,7 +50,7 @@ class UserService {
   async activate(activationLink) {
     const user = await UserModel.findOne({ activationLink });
     if (!user) {
-      throw new Error('invalid link activation');
+      throw ApiError.BadRequest('invalid link activation');
     }
     user.isActivated = true;
     await user.save();

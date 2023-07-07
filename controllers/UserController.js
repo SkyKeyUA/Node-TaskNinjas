@@ -7,7 +7,7 @@ import { tokenService, userService } from '../service/index.js';
 
 const secretJWT = process.env.JWT_ACCESS_SECRET;
 
-export const registration = async (req, res) => {
+export const registration = async (req, res, next) => {
   try {
     const { email, password, fullName, avatarUrl } = req.body;
     const userData = await userService.registration(email, password, fullName, avatarUrl);
@@ -17,15 +17,12 @@ export const registration = async (req, res) => {
     });
 
     return res.json(userData);
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      message: 'Failed to registration',
-    });
+  } catch (e) {
+    next(e);
   }
 };
 
-export const login = async (req, res) => {
+export const login = async (req, res, next) => {
   try {
     const user = await UserModel.findOne({ email: req.body.email });
 
@@ -59,15 +56,12 @@ export const login = async (req, res) => {
       ...userData,
       token,
     });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      message: 'Failed to log in',
-    });
+  } catch (e) {
+    next(e);
   }
 };
 
-export const getMe = async (req, res) => {
+export const getMe = async (req, res, next) => {
   try {
     const user = await UserModel.findById(req.userId);
 
@@ -80,56 +74,41 @@ export const getMe = async (req, res) => {
     const { passwordHash, ...userData } = user._doc;
 
     res.json({ userData });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      message: 'No access',
-    });
+  } catch (e) {
+    next(e);
   }
 };
 
-export const logout = async (req, res) => {
+export const logout = async (req, res, next) => {
   try {
     res.json(['1523', '456']);
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      message: 'No access',
-    });
+  } catch (e) {
+    next(e);
   }
 };
 
-export const activate = async (req, res) => {
+export const activate = async (req, res, next) => {
   try {
     const activationLink = req.params.link;
     await userService.activate(activationLink);
     return res.redirect(process.env.CLIENT_URL);
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      message: 'No access',
-    });
+  } catch (e) {
+    next(e);
   }
 };
 
-export const refresh = async (req, res) => {
+export const refresh = async (req, res, next) => {
   try {
     res.json(['1523', '456']);
   } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      message: 'No access',
-    });
+    next(e);
   }
 };
 
-export const getUsers = async (req, res) => {
+export const getUsers = async (req, res, next) => {
   try {
     res.json(['1523', '456']);
   } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      message: 'No access',
-    });
+    next(e);
   }
 };
