@@ -9,7 +9,7 @@ export const loginValidation = [
 
 export const registrationValidation = [
   body('email', 'Incorrect mail format').isEmail(),
-  body('password', 'The password must be at least 5 characters long').isLength({ min: 5 }),
+  body('password', 'The password must be at least 5 characters long').isLength({ min: 5, max: 32 }),
   body('fullName', 'Enter a name').isLength({ min: 2 }),
   body('avatarUrl', 'Wrong link to the avatar').optional().isURL(),
 ];

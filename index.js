@@ -8,7 +8,7 @@ import mongoose from 'mongoose';
 import cookieParser from 'cookie-parser';
 
 import { initRoutes } from './router/routes.js';
-
+import { errorMiddleware } from './middlewares/errorMiddleware.js';
 const PORT = process.env.PORT || 3000;
 const app = express();
 
@@ -16,8 +16,8 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(cors());
 app.use('/uploads', express.static('uploads'));
-
 initRoutes(app);
+app.use(errorMiddleware);
 
 const start = async () => {
   try {
