@@ -41,24 +41,6 @@ export const login = async (req, res, next) => {
   }
 };
 
-export const getMe = async (req, res, next) => {
-  try {
-    const user = await UserModel.findById(req.userId);
-
-    if (!user) {
-      return res.status(404).json({
-        message: 'User not found',
-      });
-    }
-
-    const { passwordHash, ...userData } = user._doc;
-
-    res.json({ userData });
-  } catch (e) {
-    next(e);
-  }
-};
-
 export const logout = async (req, res, next) => {
   try {
     const { refreshToken } = req.cookies;
