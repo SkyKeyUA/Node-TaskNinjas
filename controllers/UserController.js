@@ -7,8 +7,6 @@ import { tokenService, userService } from '../service/index.js';
 import { validationResult } from 'express-validator';
 import { ApiError } from '../exceptions/apiError.js';
 
-const secretJWT = process.env.JWT_ACCESS_SECRET;
-
 export const registration = async (req, res, next) => {
   try {
     const errors = validationResult(req);
@@ -84,15 +82,23 @@ export const activate = async (req, res, next) => {
 
 export const refresh = async (req, res, next) => {
   try {
-    res.json(['1523', '456']);
-  } catch (error) {
+    const { refreshToken } = req.cookies;
+    const userData = await userService.refresh(refreshToken);
+    res.cookie('refreshToken', userData.refreshToken, {
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+      httpOnly: true,
+    });
+
+    return res.json(userData);
+  } catch (e) {
     next(e);
   }
 };
 
 export const getUsers = async (req, res, next) => {
   try {
-    res.json(['1523', '456']);
+    const users = await userService.getAllUsers();
+    return res.json(users);
   } catch (error) {
     next(e);
   }
