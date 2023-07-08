@@ -81,7 +81,7 @@ export const getUsers = async (req, res, next) => {
   try {
     const users = await userService.getAllUsers();
     return res.json(users);
-  } catch (error) {
+  } catch (e) {
     next(e);
   }
 };

@@ -8,6 +8,19 @@ import { UserDto } from '../dtos/userDTO.js';
 import { ApiError } from '../exceptions/apiError.js';
 
 class UserService {
+  async generateTokensAndSave(userDto) {
+    const tokens = tokenService.generateTokens({
+      ...userDto,
+    });
+
+    await tokenService.saveToken(userDto.id, tokens.refreshToken);
+
+    return {
+      ...tokens,
+      userDto,
+    };
+  }
+
   async registration(email, password, fullName, avatarUrl) {
     const candidate = await UserModel.findOne({ email });
 
@@ -35,17 +48,7 @@ class UserService {
     );
 
     const userDto = new UserDto(user);
-    const tokens = tokenService.generateTokens({
-      ...userDto,
-    });
-    await tokenService.saveToken(userDto.id, tokens.refreshToken);
-
-    const { passwordHash, ...userData } = user._doc;
-
-    return {
-      ...tokens,
-      userData,
-    };
+    return this.generateTokensAndSave(userDto);
   }
   async activate(activationLink) {
     const user = await UserModel.findOne({ activationLink });
@@ -65,18 +68,7 @@ class UserService {
       throw ApiError.BadRequest(`The login or password is not correct`);
     }
     const userDto = new UserDto(user);
-    const tokens = tokenService.generateTokens({
-      ...userDto,
-    });
-
-    await tokenService.saveToken(userDto.id, tokens.refreshToken);
-
-    const { passwordHash, ...userData } = user._doc;
-
-    return {
-      ...tokens,
-      userData,
-    };
+    return this.generateTokensAndSave(userDto);
   }
   async logout(refreshToken) {
     const token = await tokenService.removeToken(refreshToken);
@@ -93,20 +85,15 @@ class UserService {
     }
     const user = await UserModel.findById(userData.id);
     const userDto = new UserDto(user);
-    const tokens = tokenService.generateTokens({
-      ...userDto,
-    });
-
-    await tokenService.saveToken(userDto.id, tokens.refreshToken);
-
-    return {
-      ...tokens,
-      userDto,
-    };
+    return this.generateTokensAndSave(userDto);
   }
   async getAllUsers() {
     const users = await UserModel.find();
-    return users;
+    const userData = users.map((user) => {
+      const { passwordHash, ...data } = user._doc;
+      return data;
+    });
+    return userData;
   }
 }
 
