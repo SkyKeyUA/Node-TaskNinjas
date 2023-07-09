@@ -95,6 +95,14 @@ class UserService {
     });
     return userData;
   }
+  async getMe(id) {
+    const user = await UserModel.findOne({ _id: id });
+    if (!user) {
+      throw ApiError.BadRequest(`User not found`);
+    }
+    const userDto = new UserDto(user);
+    return this.generateTokensAndSave(userDto);
+  }
 }
 
 const userService = new UserService();

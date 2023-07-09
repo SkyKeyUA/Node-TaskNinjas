@@ -85,3 +85,14 @@ export const getUsers = async (req, res, next) => {
     next(e);
   }
 };
+
+export const getMe = async (req, res, next) => {
+  try {
+    const { id } = req.user;
+    const user = await userService.getMe(id);
+
+    res.json(user);
+  } catch (e) {
+    next(e);
+  }
+};
