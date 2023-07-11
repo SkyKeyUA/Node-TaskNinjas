@@ -43,34 +43,13 @@ export const remove = async (req, res, next) => {
   }
 };
 
-export const update = async (req, res) => {
+export const update = async (req, res, next) => {
   try {
-    const postId = req.params.id;
+    const id = req.params.id;
+    const updatePost = await postService.update(id, req.body);
 
-    const doc = await PostModel.updateOne(
-      { _id: postId },
-      {
-        nickname: req.body.nickname,
-        realName: req.body.realName,
-        originDescription: req.body.originDescription,
-        superpowers: req.body.superpowers,
-        catchPhrase: req.body.catchPhrase,
-        imageUrl: req.body.imageUrl,
-        user: req.userId,
-      },
-    );
-    if (!doc) {
-      return res.status(404).json({
-        message: 'The article was not found',
-      });
-    }
-    res.json({
-      seccuss: true,
-    });
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({
-      message: 'Failed to update an article',
-    });
+    res.json(updatePost);
+  } catch (e) {
+    next(e);
   }
 };

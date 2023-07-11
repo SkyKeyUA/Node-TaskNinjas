@@ -32,7 +32,9 @@ class PostService {
   }
 
   async create(postData) {
-    const doc = new PostModel(postData);
+    const postDto = new PostDto(postData);
+    const doc = new PostModel(postDto);
+
     const post = await doc.save();
     return post;
   }
@@ -46,30 +48,12 @@ class PostService {
     return { success: true };
   }
 
-  async update() {
-    try {
-      const postId = req.params.id;
-
-      const doc = await PostModel.updateOne(
-        { _id: postId },
-        {
-          PostDto,
-        },
-      );
-      if (!doc) {
-        return res.status(404).json({
-          message: 'The article was not found',
-        });
-      }
-      res.json({
-        seccuss: true,
-      });
-    } catch (err) {
-      console.log(err);
-      res.status(500).json({
-        message: 'Failed to update an article',
-      });
+  async update(id, updateData) {
+    const doc = await PostModel.updateOne({ _id: id }, updateData);
+    if (!doc) {
+      throw ApiError.BadRequest(`The article was not found`);
     }
+    return updateData;
   }
 }
 
