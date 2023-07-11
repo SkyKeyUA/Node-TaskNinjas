@@ -23,49 +23,23 @@ export const getOne = async (req, res, next) => {
   }
 };
 
-export const remove = async (req, res) => {
+export const create = async (req, res, next) => {
   try {
-    const postId = req.params.id;
+    const createPost = await postService.create(req.body);
 
-    const doc = await PostModel.findOneAndDelete({ _id: postId });
-
-    if (!doc) {
-      return res.status(404).json({
-        message: 'The article was not found',
-      });
-    }
-
-    res.json({
-      success: true,
-    });
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({
-      message: 'Failed to remove an article',
-    });
+    res.json(createPost);
+  } catch (e) {
+    next(e);
   }
 };
 
-export const create = async (req, res) => {
+export const remove = async (req, res, next) => {
   try {
-    const doc = new PostModel({
-      nickname: req.body.nickname,
-      realName: req.body.realName,
-      originDescription: req.body.originDescription,
-      superpowers: req.body.superpowers,
-      catchPhrase: req.body.catchPhrase,
-      imageUrl: req.body.imageUrl,
-      user: req.userId,
-    });
-
-    const post = await doc.save();
-
-    res.json(post);
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      message: 'Failed to create an article',
-    });
+    const id = req.params.id;
+    const removePost = await postService.remove(id);
+    res.json(removePost);
+  } catch (e) {
+    next(e);
   }
 };
 
