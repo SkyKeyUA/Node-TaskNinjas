@@ -13,28 +13,13 @@ export const getPages = async (req, res, next) => {
   }
 };
 
-export const getOne = async (req, res) => {
+export const getOne = async (req, res, next) => {
   try {
-    const postId = req.params.id;
-
-    const doc = await PostModel.findOneAndUpdate(
-      { _id: postId },
-      { $inc: { viewsCount: 1 } },
-      { new: true },
-    ).populate('user', '-passwordHash');
-
-    if (!doc) {
-      return res.status(404).json({
-        message: 'The article was not found',
-      });
-    }
-
-    res.json(doc);
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      message: 'Failed to get an article',
-    });
+    const id = req.params.id;
+    const post = await postService.getOne(id);
+    res.json(post);
+  } catch (e) {
+    next(e);
   }
 };
 
