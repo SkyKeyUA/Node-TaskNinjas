@@ -1,23 +1,15 @@
 /** @format */
 import PostModel from '../models/Post.js';
+import { postService } from '../service/postService.js';
 
-export const getPages = async (req, res) => {
+export const getPages = async (req, res, next) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 5;
   try {
-    const count = await PostModel.countDocuments();
-    const totalPages = Math.ceil(count / limit);
-    const posts = await PostModel.find()
-      .populate('user', '-passwordHash')
-      .skip((page - 1) * limit)
-      .limit(limit)
-      .exec();
-    res.json({ posts, totalPages, currentPage: page });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      message: 'Failed to get articles',
-    });
+    const posts = await postService.getPages(page, limit);
+    res.json(posts);
+  } catch (e) {
+    next(e);
   }
 };
 

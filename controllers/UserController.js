@@ -1,9 +1,6 @@
 /** @format */
-import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
 
-import UserModel from '../models/User.js';
-import { tokenService, userService } from '../service/index.js';
+import { userService } from '../service/index.js';
 import { validationResult } from 'express-validator';
 import { ApiError } from '../exceptions/apiError.js';
 
