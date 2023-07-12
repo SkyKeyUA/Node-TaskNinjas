@@ -25,8 +25,8 @@ export const getOne = async (req, res, next) => {
 
 export const create = async (req, res, next) => {
   try {
-    const createPost = await postService.create(req.body);
-
+    const userId = req.userId;
+    const createPost = await postService.create({ ...req.body, user: userId });
     res.json(createPost);
   } catch (e) {
     next(e);

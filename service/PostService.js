@@ -34,7 +34,6 @@ class PostService {
   async create(postData) {
     const postDto = new PostDto(postData);
     const doc = new PostModel(postDto);
-
     const post = await doc.save();
     return post;
   }
