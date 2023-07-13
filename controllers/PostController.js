@@ -1,48 +1,25 @@
 /** @format */
 import PostModel from '../models/Post.js';
+import { postService } from '../service/postService.js';
 
-export const getPages = async (req, res) => {
+export const getPages = async (req, res, next) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 5;
   try {
-    const count = await PostModel.countDocuments();
-    const totalPages = Math.ceil(count / limit);
-    const posts = await PostModel.find()
-      .populate('user', '-passwordHash')
-      .skip((page - 1) * limit)
-      .limit(limit)
-      .exec();
-    res.json({ posts, totalPages, currentPage: page });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      message: 'Failed to get articles',
-    });
+    const posts = await postService.getPages(page, limit);
+    res.json(posts);
+  } catch (e) {
+    next(e);
   }
 };
 
-export const getOne = async (req, res) => {
+export const getOne = async (req, res, next) => {
   try {
-    const postId = req.params.id;
-
-    const doc = await PostModel.findOneAndUpdate(
-      { _id: postId },
-      { $inc: { viewsCount: 1 } },
-      { new: true },
-    ).populate('user', '-passwordHash');
-
-    if (!doc) {
-      return res.status(404).json({
-        message: 'The article was not found',
-      });
-    }
-
-    res.json(doc);
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      message: 'Failed to get an article',
-    });
+    const id = req.params.id;
+    const post = await postService.getOne(id);
+    res.json(post);
+  } catch (e) {
+    next(e);
   }
 };
 

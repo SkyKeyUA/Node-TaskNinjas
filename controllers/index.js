@@ -3,10 +3,10 @@
 export {
   registration,
   login,
-  getMe,
   refresh,
   logout,
   activate,
   getUsers,
+  getMe,
 } from './UserController.js';
 export * as PostController from './PostController.js';

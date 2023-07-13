@@ -1,13 +1,8 @@
 /** @format */
-import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
 
-import UserModel from '../models/User.js';
-import { tokenService, userService } from '../service/index.js';
+import { userService } from '../service/index.js';
 import { validationResult } from 'express-validator';
 import { ApiError } from '../exceptions/apiError.js';
-
-const secretJWT = process.env.JWT_ACCESS_SECRET;
 
 export const registration = async (req, res, next) => {
   try {
@@ -43,24 +38,6 @@ export const login = async (req, res, next) => {
   }
 };
 
-export const getMe = async (req, res, next) => {
-  try {
-    const user = await UserModel.findById(req.userId);
-
-    if (!user) {
-      return res.status(404).json({
-        message: 'User not found',
-      });
-    }
-
-    const { passwordHash, ...userData } = user._doc;
-
-    res.json({ userData });
-  } catch (e) {
-    next(e);
-  }
-};
-
 export const logout = async (req, res, next) => {
   try {
     const { refreshToken } = req.cookies;
@@ -84,16 +61,35 @@ export const activate = async (req, res, next) => {
 
 export const refresh = async (req, res, next) => {
   try {
-    res.json(['1523', '456']);
-  } catch (error) {
+    const { refreshToken } = req.cookies;
+    const userData = await userService.refresh(refreshToken);
+    res.cookie('refreshToken', userData.refreshToken, {
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+      httpOnly: true,
+    });
+
+    return res.json(userData);
+  } catch (e) {
     next(e);
   }
 };
 
 export const getUsers = async (req, res, next) => {
   try {
-    res.json(['1523', '456']);
-  } catch (error) {
+    const users = await userService.getAllUsers();
+    return res.json(users);
+  } catch (e) {
+    next(e);
+  }
+};
+
+export const getMe = async (req, res, next) => {
+  try {
+    const { id } = req.user;
+    const user = await userService.getMe(id);
+
+    res.json(user);
+  } catch (e) {
     next(e);
   }
 };
