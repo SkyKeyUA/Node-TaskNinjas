@@ -1,6 +1,7 @@
 /** @format */
 import { ApiError } from '../exceptions/apiError.js';
 import PostModel from '../models/Post.js';
+import { PostDto } from '../dtos/postDto.js';
 
 class PostService {
   async getPages(page, limit) {
@@ -11,6 +12,9 @@ class PostService {
       .skip((page - 1) * limit)
       .limit(limit)
       .exec();
+    if (!posts) {
+      throw ApiError.BadRequest(`posts not found`);
+    }
     return { posts, totalPages, currentPage: page };
   }
   async getOne(id) {
@@ -25,6 +29,30 @@ class PostService {
     }
 
     return post;
+  }
+
+  async create(postData) {
+    const postDto = new PostDto(postData);
+    const doc = new PostModel(postDto);
+    const post = await doc.save();
+    return post;
+  }
+
+  async remove(id) {
+    const doc = await PostModel.findOneAndDelete({ _id: id });
+    if (!doc) {
+      throw ApiError.BadRequest(`The article was not found`);
+    }
+
+    return { success: true };
+  }
+
+  async update(id, updateData) {
+    const doc = await PostModel.updateOne({ _id: id }, updateData);
+    if (!doc) {
+      throw ApiError.BadRequest(`The article was not found`);
+    }
+    return updateData;
   }
 }
 

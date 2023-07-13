@@ -2,7 +2,7 @@
 
 import express from 'express';
 import multer from 'multer';
-import { checkAuth } from '../utils/index.js';
+import { authMiddleware } from '../middlewares/authMiddleware.js';
 
 const uploadRouter = express.Router();
 
@@ -17,7 +17,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-uploadRouter.post('/', checkAuth, upload.single('image'), (req, res) => {
+uploadRouter.post('/', authMiddleware, upload.single('image'), (req, res) => {
   res.json({
     url: `/uploads/${req.file.originalname}`,
   });
